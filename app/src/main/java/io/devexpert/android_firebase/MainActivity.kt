@@ -19,20 +19,41 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
+import io.devexpert.android_firebase.data.network.FirebaseClient
+import io.devexpert.android_firebase.data.network.UserService
+import io.devexpert.android_firebase.data.network.model.UserData
 import io.devexpert.android_firebase.ui.navigation.Navigation
 import io.devexpert.android_firebase.ui.theme.Android_firebaseTheme
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
+    private lateinit var userService: UserService
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        FirebaseApp.initializeApp(this)
+        // Inicializar FirebaseClient
+        val firebaseClient = FirebaseClient(applicationContext)
+        // Inicializar UserService con FirebaseClient
+        userService = UserService(firebaseClient)
+
+        // Ejemplo de creación de usuario
+        val userData = UserData(/* datos del usuario */)
+        lifecycleScope.launch {
+            val success = userService.createUser(userData)
+            if (success) {
+                // La inserción fue exitosa
+            } else {
+                // Hubo un error al insertar el usuario
+            }
+        }
         askNotificationPermission()
         tokenNew()
 
